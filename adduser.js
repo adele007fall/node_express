@@ -28,13 +28,6 @@ app.use(expressSession({
     resave: 'true',
     saveUninitialized: 'true'
 }));
-// var errorHandler = expressErrorHandler({
-//     static: {
-//         '404' : './public/404.html'
-//     }
-// });
-// app.use(expressErrorHandler.httpError(404));
-// app.use(errorHandler);
 
 // 몽고디비 모듈
 var MongoClient = require('mongodb').MongoClient;
@@ -57,35 +50,37 @@ function connetDB(){
     })
 }
 
-var authUser = function(database, id, password, callback){
-    console.log(`authUser 호출`);
+var addUser = function(database, id, password, name, callback){
+    console.log(`addUser 호출`)
     var users = database.collection('users');
-    users.find({"id": id, "password": password}).toArray(
-        function(err,docs){
+    users.insertMany(
+        [{"id":id,"password":password,"name":name}],
+    function(err,res){
         if(err){
-            callback(err, null);
+            callback(err,null);
             return;
         }
-        if(docs.length > 0){
-            console.log(`${id} ${password}`, id, password);
-            callback(null, docs);
+        if(res.insertedCount > 0){
+            console.log('사용자가 추가되었습니다.'+ res.insertedCount);
+            callback(null, res);
         }else{
-            console.log(`can't read`);
-            callback(null,null);
-        }
-    })
+            console.log(`추가된 문서 객체가 없습니다.`);
+            callback(null, null); 
+        } 
+    });
 }
 
 // Router 객체 참조
 var router = express.Router();
-// login route 함수 && 데이터베이스 정보 비교
-router.route('/process/login').post(function(req,res){  
-    console.log('/process/login 이 호출됩니다.');
+
+router.route('/process/adduser').post(function(req,res){
+    console.log('/process/adduser 이 호출됩니다.');
     var paramID = req.body.id || req.query.id;
     var paramPassword = req.body.password || req.query.password;
+    var name = req.body.name || req.query.name;
 
     if(database){
-        authUser(database, paramID, paramPassword, function(err, docs){
+        addUser(database, paramID, paramPassword, name, function(err,res){
             if(err){
                 console.log('에러 발생')
                 res.writeHead(200, {"Content-Type":"text/html; charset=utf8"})
@@ -93,18 +88,15 @@ router.route('/process/login').post(function(req,res){
                 res.end();
                 return;
             }
-            if(docs){
-                console.dir(docs);
-                var username = docs[0].name;
+            if(res){
+                console.dir(res);
                 res.writeHead('200',{"Content-Type":'text/html; charset=utf8'});
-                res.write(`<h1>${username}님 반갑습니다.</h1>`) 
-                res.write(`<a href="/public/login.html">retry</a>`)
-                res.end(); 
-            }else{
-                res.writeHead('200',{'Content-Type':'text/html; charset=utf8'});
-                res.write(`<h1>로그인 실패</h1>`)
-                res.write(`<p>아이디와 비밀번호를 확인해주세요.</p>`)
-                res.write(`<a href="/public/login.html">retry</a>`)
+                res.write(`<h1>사용자가 추가 되었습니다.</h1>`) 
+                res.write(`<p>${name}</p>`)
+                res.end();
+            }else{ 
+                res.writeHead('200',{"Content-Type":'text/html; charset=utf8'});
+                res.write(`<h1>사용자 추가 실패</h1>`)  
                 res.end(); 
             }
         })
@@ -114,7 +106,7 @@ router.route('/process/login').post(function(req,res){
         res.write(`<p>데이터 베이스에 연결하지 못하였습니다.</p>`) 
         res.end(); 
     }
-}); 
+});
 // 라우터 객체 등록
 app.use('/', router);
  
