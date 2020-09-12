@@ -3,6 +3,7 @@
 var express = require('express');
 var http = require('http'); 
 var path = require('path');
+var fs = require('fs');
 // 미들웨어 모듈
 var static = require('serve-static'); 
 var bodyParser = require('body-parser');
@@ -74,6 +75,39 @@ var authUser = function(database, id, password, callback){
             callback(null,null);
         }
     })
+//     if(pathname === '/public/adduser.html'){  
+//         var url = require('url');
+//         var _url = request.url;
+//         var pathname = url.parse(_url, true).pathname;
+//         app.get(`/process/adduser`,(err)=>{
+//             if(err){
+//                 console.log('123');
+//                 callback(err);
+//             }
+//             res.redirect('/public/adduser.html');
+//             res.end();
+//         }) 
+//    }
+}
+
+var addUser = function(database, id, password, name, callback){
+    console.log(`addUser 호출`)
+    var users = database.collection('users');
+    users.insertMany(
+        [{"id":id,"password":password,"name":name}],
+    function(err,res){
+        if(err){
+            callback(err,null);
+            return;
+        }
+        if(res.insertedCount > 0){
+            console.log('사용자가 추가되었습니다.'+ res.insertedCount);
+            callback(null, res);
+        }else{
+            console.log(`추가된 문서 객체가 없습니다.`);
+            callback(null, null); 
+        } 
+    });
 }
 
 // Router 객체 참조
@@ -115,6 +149,42 @@ router.route('/process/login').post(function(req,res){
         res.end(); 
     }
 }); 
+
+
+router.route('/process/adduser').post(function(req,res){
+    console.log('/process/adduser 이 호출됩니다.');
+    var paramID = req.body.id || req.query.id;
+    var paramPassword = req.body.password || req.query.password;
+    var name = req.body.name || req.query.name;
+
+    if(database){
+        addUser(database, paramID, paramPassword, name, function(err,add){
+            if(err){
+                console.log('에러 발생')
+                res.writeHead(200, {"Content-Type":"text/html; charset=utf8"})
+                res.write(`<h1>에러 발생</h1>`)
+                res.end();
+                return;
+            }
+            if(add){
+                console.dir(add);
+                res.writeHead('200',{"Content-Type":'text/html; charset=utf8'});
+                res.write(`<h1>사용자가 추가 되었습니다.</h1>`) 
+                res.write(`<p>${name}</p>`)
+                res.end();
+            }else{ 
+                res.writeHead('200',{"Content-Type":'text/html; charset=utf8'});
+                res.write(`<h1>사용자 추가 실패</h1>`)  
+                res.end(); 
+            }
+        })
+    }else{
+        res.writeHead('404',{'Content-Type':'text/html; charset=utf8'});
+        res.write(`<h2>정보조회실패</h2>`)
+        res.write(`<p>데이터 베이스에 연결하지 못하였습니다.</p>`) 
+        res.end(); 
+    }
+});
 // 라우터 객체 등록
 app.use('/', router);
  

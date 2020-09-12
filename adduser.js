@@ -80,7 +80,7 @@ router.route('/process/adduser').post(function(req,res){
     var name = req.body.name || req.query.name;
 
     if(database){
-        addUser(database, paramID, paramPassword, name, function(err,res){
+        addUser(database, paramID, paramPassword, name, function(err,add){
             if(err){
                 console.log('에러 발생')
                 res.writeHead(200, {"Content-Type":"text/html; charset=utf8"})
@@ -88,8 +88,8 @@ router.route('/process/adduser').post(function(req,res){
                 res.end();
                 return;
             }
-            if(res){
-                console.dir(res);
+            if(add){
+                console.dir(add);
                 res.writeHead('200',{"Content-Type":'text/html; charset=utf8'});
                 res.write(`<h1>사용자가 추가 되었습니다.</h1>`) 
                 res.write(`<p>${name}</p>`)
