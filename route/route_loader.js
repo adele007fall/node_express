@@ -7,7 +7,7 @@ route_loader.init = (app, router)=>{
 }
 function initRoutes(app, router){
     console.log(`init called`);
-    for (var i=0; i <config.route_info.length; i++){
+    for (var i=0; i < config.route_info.length; i++){
         var curItem = config.route_info[i];
         var curModule = require(curItem.file);
         if(curItem.type == 'get'){

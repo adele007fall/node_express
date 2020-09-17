@@ -13,9 +13,6 @@ var errorHandler = require('errorhandler');
 var expressErrorHandler = require('express-error-handler');
 // session 미들웨어 모듈
 var expressSession = require('express-session');
-// 기본속성 설정
-var app = express();
-app.set('port', process.env.PORT||3500);
 // Body Parser 이용 x-www-form-urlencoded parsing 
 app.use(bodyParser.urlencoded({extended:false})); 
 app.use(bodyParser.json());  
@@ -74,20 +71,7 @@ var authUser = function(database, id, password, callback){
             console.log(`can't read`);
             callback(null,null);
         }
-    })
-//     if(pathname === '/public/adduser.html'){  
-//         var url = require('url');
-//         var _url = request.url;
-//         var pathname = url.parse(_url, true).pathname;
-//         app.get(`/process/adduser`,(err)=>{
-//             if(err){
-//                 console.log('123');
-//                 callback(err);
-//             }
-//             res.redirect('/public/adduser.html');
-//             res.end();
-//         }) 
-//    }
+    }) 
 }
 
 var addUser = function(database, id, password, name, callback){
@@ -189,6 +173,9 @@ router.route('/process/adduser').post(function(req,res){
 app.use('/', router);
  
 
+// 기본속성 설정
+var app = express();
+app.set('port', process.env.PORT||3500);
 http.createServer(app).listen(3500, ()=>{
     connetDB()
 })
