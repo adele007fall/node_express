@@ -12,23 +12,23 @@ Schema.createSchema = function (mongoose) {
         updated_at: { type: Date, index: { unique: false }, 'default': Date.now() }
     })
     UserSchema.virtual('password').set(function (password) {
-            this._password = password;
-            this.salt = this.makeSalt();
-            this.hashed_password = this.encryptPassword(password);
-            console.log('virtual password의 set 호출됨 : ' + this.hashed_password);
-        })
+        this._password = password;
+        this.salt = this.makeSalt();
+        this.hashed_password = this.encryptPassword(password);
+        console.log('virtual password의 set 호출됨 : ' + this.hashed_password);
+    })
         .get(function () {
             console.log('virtual password의 get 호출됨.');
             return this._password;
         });
-    UserSchema.method('encryptPassword', function(plainText, inSalt) {
+    UserSchema.method('encryptPassword', function (plainText, inSalt) {
         if (inSalt) {
             return crypto.createHmac('sha1', inSalt).update(plainText).digest('hex');
         } else {
             return crypto.createHmac('sha1', this.salt).update(plainText).digest('hex');
         }
     });
-    UserSchema.method('makeSalt', function() {
+    UserSchema.method('makeSalt', function () {
         return Math.round((new Date().valueOf() * Math.random())) + '';
     });
     UserSchema.method('authenticate', function (plainText, inSalt, hashed_password) {
@@ -41,9 +41,9 @@ Schema.createSchema = function (mongoose) {
         }
     })
     console.log('userSchma 정의됨');
-    UserSchema.static("findById",function(id,callback){
-		return this.find({id:id},callback);
-	});
+    UserSchema.static("findById", function (id, callback) {
+        return this.find({ id: id }, callback);
+    });
     UserSchema.static('findAll', function (callback) {
         return this.find({}, callback);
     })

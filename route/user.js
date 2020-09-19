@@ -1,11 +1,10 @@
-
 var login = function (req, res) {
     console.log('/process/login 이 호출됩니다.');
     var paramID = req.body.id || req.query.id;
     var paramPassword = req.body.password || req.query.password;
     var database = req.app.get('database');
-    
-    if(database) {
+
+    if (database) {
         authUser(database, paramID, paramPassword, function (err, result) {
             if (err) {
                 console.log('login error')
@@ -14,7 +13,7 @@ var login = function (req, res) {
                 res.end();
                 return;
             }
-            if (result) { 
+            if (result) {
                 var username = result[0].name;
                 res.writeHead('200', { "Content-Type": 'text/html; charset=utf8' });
                 res.write(`<h1>${username}님 반갑습니다.</h1>`)
@@ -80,7 +79,7 @@ var authUser = function (database, id, password, callback) {
             return;
         }
         console.log('아이디로 검색');
-        if (results.length > 0) { 
+        if (results.length > 0) {
             var user = new database.UserModel({ id: id });
             var authenticated = user.authenticate(password, results[0]._doc.salt, results[0]._doc.hashed_password);
             if (authenticated) {
