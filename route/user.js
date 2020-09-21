@@ -23,7 +23,7 @@ var login = function (req, res) {
                 res.writeHead('200', { 'Content-Type': 'text/html; charset=utf8' });
                 res.write(`<h1>로그인 실패</h1>`)
                 res.write(`<p>아이디와 비밀번호를 확인해주세요.</p>`)
-                res.write(`<a href="/public/login.html">retry</a>`)
+                res.write(`<a href="/login.html">retry</a>`)
                 res.end();
             }
         })

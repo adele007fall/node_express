@@ -5,7 +5,7 @@ module.exports = {
         {file: './user_schema', collection: 'users',
     schemaName:'UserSchema', modelName: 'UserModel'}
     ],
-    route_info: [
+    route_info: [ 
         {file: './user', path: '/process/login', method:'login',type:'post'},
         {file: './user', path: '/process/adduser', method:'adduser',type:'post'},
         {file: './user', path: '/process/userlist', method:'userlist',type:'post'},

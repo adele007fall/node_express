@@ -37,7 +37,7 @@ app.use(
     })
 );
 // public folder 를 static으로 오픈
-app.use(static(path.join(__dirname, 'public')));
+app.use('/public',static(path.join(__dirname, 'public')));
 // const user = require('./route/user');
 route_loader.init(app, express.Router());
 // Router 객체 참조
