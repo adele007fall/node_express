@@ -1,6 +1,6 @@
 module.exports = {
-    server_port:3500,
-    db_url:'mongodb://localhost:27017',
+    server_port:8080,
+    db_url:'mongodb+srv://adele007fall:ans123@myfirstback.lbrdw.gcp.mongodb.net/<dbname>?retryWrites=true&w=majority',
     db_schemas: [
         {file: './user_schema', collection: 'users',
     schemaName:'UserSchema', modelName: 'UserModel'}
